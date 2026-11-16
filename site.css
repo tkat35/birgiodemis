@@ -75,6 +75,9 @@ main { max-width: var(--genislik); margin: 0 auto; padding: 0 20px 48px; }
 h2 { font: 600 1.75rem/1.2 var(--serif); margin: 48px 0 16px; }
 h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .yazi p { margin: 0 0 1em; font: 400 1.125rem/1.7 var(--serif); }
+/* Kaynakça: APA biçiminde asılı girinti, madde imi yok */
+.kaynakca { list-style: none; margin: 1.5em 0 0; padding: 0; }
+.kaynakca li { margin: 0 0 .9em; padding-left: 2em; text-indent: -2em; font: 400 1rem/1.6 var(--sans); overflow-wrap: anywhere; }
 .altbaslik { margin: -6px 0 16px; color: var(--ceviz-acik); }
 .yol { font-size: .9375rem; color: var(--ceviz-acik); padding-top: 16px; }
 .yol a { text-underline-offset: 3px; }
