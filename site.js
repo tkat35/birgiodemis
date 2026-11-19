@@ -50,6 +50,70 @@
   pencere.addEventListener("close", function () { if (sonOdak) { sonOdak.focus(); } });
 })();
 
+// Tanıtım videosu: kapağa dokununca YouTube oynatıcısı yüklenir (öncesinde YouTube'a bağlanılmaz).
+// Video data-bitis saniyesinde durur ve kapak geri gelir (sondaki logo görünmesin). İleri sarınca YouTube'un
+// "end" ayarı geçersiz kaldığı için oynatma süresi ayrıca izlenir.
+(function () {
+  "use strict";
+  var kapak = document.querySelector("[data-video]");
+  if (!kapak) { return; }
+  var kutu = kapak.parentNode;
+  var kimlik = kapak.getAttribute("data-video");
+  var bitis = Number(kapak.getAttribute("data-bitis"));
+  var etiket = kapak.querySelector(".video-dugme span");
+  var oynatici = null;
+  var sayac = null;
+
+  function apiYukle(sonra, hata) {
+    if (window.YT && window.YT.Player) { sonra(); return; }
+    var onceki = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = function () { if (onceki) { onceki(); } sonra(); };
+    var betik = document.createElement("script");
+    betik.src = "https://www.youtube.com/iframe_api";
+    betik.onerror = function () { betik.remove(); hata(); };
+    document.head.appendChild(betik);
+  }
+
+  function bitir() {
+    clearInterval(sayac);
+    if (document.fullscreenElement && document.exitFullscreen) { document.exitFullscreen().catch(function () {}); }
+    if (oynatici) { try { oynatici.destroy(); } catch (h) { /* zaten kapanmış */ } }
+    oynatici = null;
+    Array.prototype.forEach.call(kutu.querySelectorAll("iframe, .video-yer"), function (o) { o.remove(); });
+    etiket.textContent = "Yeniden izle";
+    kapak.hidden = false;
+    kapak.focus();
+  }
+
+  kapak.addEventListener("click", function (olay) {
+    olay.preventDefault();
+    if (oynatici) { return; }
+    etiket.textContent = "Yükleniyor…";
+    apiYukle(function () {
+      var yer = document.createElement("div");
+      yer.className = "video-yer";
+      kutu.appendChild(yer);
+      kapak.hidden = true;
+      oynatici = new window.YT.Player(yer, {
+        host: "https://www.youtube-nocookie.com",
+        videoId: kimlik,
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 1, end: bitis, rel: 0, playsinline: 1, hl: "tr", iv_load_policy: 3 },
+        events: {
+          onReady: function (o) { o.target.playVideo(); },
+          onStateChange: function (o) { if (o.data === window.YT.PlayerState.ENDED) { bitir(); } }
+        }
+      });
+      sayac = setInterval(function () {
+        if (oynatici && typeof oynatici.getCurrentTime === "function" && oynatici.getCurrentTime() >= bitis) { bitir(); }
+      }, 250);
+    }, function () {
+      etiket.textContent = "Video yüklenemedi — tekrar dene";
+    });
+  });
+})();
+
 // Ana ekrana eklenmiş sürüm (PWA): çevrimdışı önbelleği yalnız ana ekrandan açılınca kaydet.
 // Tarayıcıda siteyi açan ziyaretçiler etkilenmez.
 (function () {

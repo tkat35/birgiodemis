@@ -157,6 +157,19 @@ h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .alinti { margin: 56px 0 0; padding: 32px 0; border-top: 1px solid var(--kirec-koyu); }
 .alinti blockquote { margin: 0; font: 400 1.5rem/1.45 var(--serif); max-width: 34ch; }
 .alinti cite { display: block; margin-top: 12px; font: normal .9375rem var(--sans); color: var(--ceviz-acik); }
+/* Tanıtım videosu: kapak + dokununca YouTube oynatıcısı (site.js) */
+.video { max-width: 800px; }
+.video-kutu { position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
+.video-kutu > a, .video-kutu > iframe, .video-kutu > div { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-kapak { display: block; color: #fff; text-decoration: none; }
+.video-kapak[hidden] { display: none; }
+.video-kapak img { width: 100%; height: 100%; object-fit: cover; }
+.video-kapak::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,.1)); }
+.video-dugme { position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 6px;
+  min-height: 48px; padding: 0 22px 0 16px; border-radius: 99px; background: var(--kiremit); font: 700 1.0625rem var(--sans); white-space: nowrap; }
+.video-kapak:hover .video-dugme, .video-kapak:focus-visible .video-dugme { background: #9A3B27; }
+.video-kapak strong { position: absolute; z-index: 1; left: 16px; right: 16px; bottom: 12px; font: 700 1.25rem/1.25 var(--serif); }
+.video .not { margin: 10px 0 0; color: var(--ceviz-acik); font-size: .9375rem; }
 /* Telefonuna al: Android (yakında) + iPhone ana ekrana ekleme */
 .uygulama { margin: 56px 0 0; scroll-margin-top: 80px; }
 .uygulama-kartlar { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
