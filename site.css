@@ -157,6 +157,16 @@ h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .alinti { margin: 56px 0 0; padding: 32px 0; border-top: 1px solid var(--kirec-koyu); }
 .alinti blockquote { margin: 0; font: 400 1.5rem/1.45 var(--serif); max-width: 34ch; }
 .alinti cite { display: block; margin-top: 12px; font: normal .9375rem var(--sans); color: var(--ceviz-acik); }
+/* Telefonuna al: Android (yakında) + iPhone ana ekrana ekleme */
+.uygulama { margin: 56px 0 0; scroll-margin-top: 80px; }
+.uygulama-kartlar { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.uygulama-kart { background: #fff; border-radius: 14px; padding: 22px 22px 18px; }
+.uygulama-kart h3 { margin: 0 0 10px; font: 700 1.25rem/1.3 var(--serif); color: var(--cam); }
+.uygulama-kart p { margin: 0; }
+.uygulama .adimlar { margin: 0 0 12px; padding-left: 1.4em; display: grid; gap: 6px; }
+.uygulama .paylas { vertical-align: -3px; color: #0A7AFF; }
+.uygulama .not { margin: 0; color: var(--ceviz-acik); font-size: .9375rem; }
+.uygulama > .not { margin-top: 14px; }
 .proje { margin: 56px 0 0; padding: 28px 24px; background: #fff; border-radius: 14px; display: grid; gap: 12px; }
 .proje p { margin: 0; color: var(--ceviz-acik); }
 .proje .dugme { justify-self: start; }
