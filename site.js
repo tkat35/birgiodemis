@@ -49,3 +49,14 @@
   });
   pencere.addEventListener("close", function () { if (sonOdak) { sonOdak.focus(); } });
 })();
+
+// Ana ekrana eklenmiş sürüm (PWA): çevrimdışı önbelleği yalnız ana ekrandan açılınca kaydet.
+// Tarayıcıda siteyi açan ziyaretçiler etkilenmez.
+(function () {
+  "use strict";
+  var anaEkran = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+    window.navigator.standalone === true;
+  if (anaEkran && "serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () { /* önbellek olmadan da çalışır */ });
+  }
+})();
