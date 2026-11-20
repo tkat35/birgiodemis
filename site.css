@@ -157,10 +157,11 @@ h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .alinti { margin: 56px 0 0; padding: 32px 0; border-top: 1px solid var(--kirec-koyu); }
 .alinti blockquote { margin: 0; font: 400 1.5rem/1.45 var(--serif); max-width: 34ch; }
 .alinti cite { display: block; margin-top: 12px; font: normal .9375rem var(--sans); color: var(--ceviz-acik); }
-/* Tanıtım videosu: kapak + dokununca YouTube oynatıcısı (site.js) */
+/* Tanıtım videosu: kapak + dokununca sitenin kendi video dosyası (site.js) */
 .video { max-width: 800px; }
 .video-kutu { position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
-.video-kutu > a, .video-kutu > iframe, .video-kutu > div { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-kutu > a, .video-kutu > video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-kutu > video { object-fit: contain; background: #000; }
 .video-kapak { display: block; color: #fff; text-decoration: none; }
 .video-kapak[hidden] { display: none; }
 .video-kapak img { width: 100%; height: 100%; object-fit: cover; }
