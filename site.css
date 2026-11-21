@@ -152,6 +152,74 @@ h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .dugme:hover { background: var(--cam-koyu); }
 .dugmeler { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
 .harita img { width: 100%; border-radius: 12px; }
+.dugme.ikincil { background: #fff; color: var(--cam); box-shadow: inset 0 0 0 1.5px var(--cam); }
+.dugme.ikincil:hover { background: var(--kirec); }
+.metin-dugme { border: 0; background: none; padding: 0; font: inherit; color: var(--cam); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.haritada { margin: 6px 0 0; }
+.haritada a { color: var(--kiremit); font-weight: 600; text-underline-offset: 3px; }
+
+/* Vektör Birgi haritası (OpenStreetMap; site.js) — mobil uygulamadaki Mobil Harita ile aynı veri ve renkler */
+.vharita { margin: 32px 0 8px; }
+.vh-aciklama { margin: 0 0 12px; color: var(--ceviz-acik); }
+.vh-suzgec { list-style: none; display: flex; gap: 8px; overflow-x: auto; margin: 0 0 10px; padding: 2px 2px 8px; }
+.vh-suzgec button { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--kirec-koyu); background: #fff; color: var(--ceviz); font: 500 .9375rem var(--sans); white-space: nowrap; cursor: pointer; }
+.vh-suzgec button[aria-pressed="true"] { background: var(--cam); border-color: var(--cam); color: #fff; }
+.vh-nokta { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--r); }
+.vh-suzgec button[aria-pressed="true"] .vh-nokta { box-shadow: 0 0 0 1.5px #fff; }
+.vh-kutu { position: relative; height: min(70vh, 640px); min-height: 380px; overflow: hidden; border-radius: 14px;
+  border: 1px solid var(--kirec-koyu); background: #F1ECE0; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.vh-kutu.suruklu { cursor: grabbing; }
+.vh-ic { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.vh-altlik svg { display: block; }
+.vh-isaret { position: absolute; width: 44px; height: 44px; margin: 0; padding: 0; border: 0; background: none; cursor: pointer;
+  transform: translate(-50%, -50%) scale(var(--ters, 1)); -webkit-tap-highlight-color: transparent; }
+.vh-isaret::before { content: ""; position: absolute; left: 50%; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin: -9px 0 0 -9px;
+  border-radius: 50%; background: var(--r); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
+.vh-isaret.secili { z-index: 2; }
+.vh-isaret.secili::before { width: 26px; height: 26px; margin: -13px 0 0 -13px; border-width: 3px; }
+.vh-isaret:focus-visible { outline: 3px solid var(--kiremit); outline-offset: -6px; border-radius: 50%; }
+.vh-isaret[hidden] { display: none; }
+.vh-ad { display: none; position: absolute; left: 34px; top: 50%; transform: translateY(-50%); white-space: nowrap; pointer-events: none;
+  font: 700 13px/1 var(--sans); color: #2B2B2B; text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff; }
+.vh-isaret.adli .vh-ad, .vh-isaret.secili .vh-ad { display: block; }
+.vh-isaret.secili .vh-ad { font-size: 14px; left: 36px; }
+.vh-konum { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; }
+.vh-konum[hidden] { display: none; }
+.vh-halka { position: absolute; border-radius: 50%; background: rgba(26,115,232,.15); border: 1px solid rgba(26,115,232,.4); transform: translate(-50%, -50%); }
+.vh-ben { position: absolute; box-sizing: border-box; width: 20px; height: 20px; border-radius: 50%; background: #1A73E8; border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4); transform: translate(-50%, -50%) scale(var(--ters, 1)); }
+.vh-araclar { position: absolute; right: 10px; top: 10px; z-index: 4; display: flex; flex-direction: column; gap: 8px; }
+.vh-araclar button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15);
+  background: #fff; color: var(--ceviz); font: 600 1.375rem/1 var(--sans); box-shadow: 0 1px 4px rgba(0,0,0,.2); cursor: pointer; }
+.vh-araclar .vh-konum-dugme.acik { background: #1A73E8; border-color: #1A73E8; color: #fff; }
+.vh-araclar .vh-konum-dugme.bekliyor svg { animation: vh-don 1s linear infinite; }
+@keyframes vh-don { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .vh-araclar .vh-konum-dugme.bekliyor svg { animation: none; opacity: .5; } }
+.vh-mesaj { position: absolute; left: 10px; right: 64px; top: 10px; z-index: 4; padding: 10px 14px; border-radius: 10px;
+  background: rgba(34,34,34,.94); color: #fff; font-size: .9375rem; }
+.vh-mesaj[hidden], .vh-kart[hidden] { display: none; }
+.vh-kart { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 4; max-width: 460px; display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px; border-radius: 12px; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.25); cursor: auto; }
+.vh-kart img { flex: none; width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+.vh-kart img[hidden] { display: none; }
+.vh-kart > div { flex: 1; min-width: 0; padding-right: 30px; }
+.vh-kart-tur { margin: 0; font-size: .8125rem; color: var(--ceviz-acik); }
+.vh-kart-ad { margin: 2px 0 10px; font: 700 1.125rem/1.25 var(--serif); }
+.vh-kart-dugmeler { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.vh-kart .dugme { min-height: 40px; padding: 0 14px; font-size: .9375rem; border-radius: 10px; }
+.vh-kapat { position: absolute; right: 4px; top: 4px; width: 40px; height: 40px; border: 0; background: none; font-size: 1.5rem; line-height: 1;
+  color: var(--ceviz-acik); cursor: pointer; }
+.vh-js-yok { padding: 20px; }
+.vharita .not { margin: 10px 0 0; color: var(--ceviz-acik); font-size: .9375rem; }
+.vh-liste { margin: 16px 0 0; }
+.vh-liste summary { cursor: pointer; font-weight: 600; padding: 10px 0; }
+.vh-liste > ul { list-style: none; padding: 0; margin: 8px 0 0; columns: 2 260px; column-gap: 32px; }
+.vh-liste > ul > li { break-inside: avoid; margin: 0 0 14px; }
+.vh-liste > ul > li > strong { margin-left: 6px; }
+.vh-liste li ul { list-style: none; padding: 4px 0 0 16px; margin: 0; }
+.vh-liste li li { padding: 3px 0; }
+.vh-goster { font-size: .875rem; color: var(--kiremit); margin-left: 4px; }
 
 /* Alıntı ve proje bandı */
 .alinti { margin: 56px 0 0; padding: 32px 0; border-top: 1px solid var(--kirec-koyu); }
