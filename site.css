@@ -172,18 +172,19 @@ h3 { font: 600 1.375rem/1.25 var(--serif); margin: 32px 0 10px; }
 .vh-kutu.suruklu { cursor: grabbing; }
 .vh-ic { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .vh-altlik svg { display: block; }
-.vh-isaret { position: absolute; width: 44px; height: 44px; margin: 0; padding: 0; border: 0; background: none; cursor: pointer;
+/* İşaret boyu yakınlaştırmaya bağlı (site.js --boy, --alan): uzaktayken küçülür, kalabalık yerde iç içe geçmez */
+.vh-isaret { position: absolute; width: var(--alan, 44px); height: var(--alan, 44px); margin: 0; padding: 0; border: 0; background: none; cursor: pointer;
   transform: translate(-50%, -50%) scale(var(--ters, 1)); -webkit-tap-highlight-color: transparent; }
-.vh-isaret::before { content: ""; position: absolute; left: 50%; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin: -9px 0 0 -9px;
-  border-radius: 50%; background: var(--r); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
-.vh-isaret.secili { z-index: 2; }
-.vh-isaret.secili::before { width: 26px; height: 26px; margin: -13px 0 0 -13px; border-width: 3px; }
+.vh-isaret::before { content: ""; position: absolute; left: 50%; top: 50%; box-sizing: border-box; width: var(--boy, 18px); height: var(--boy, 18px);
+  transform: translate(-50%, -50%); border-radius: 50%; background: var(--r); border: var(--kenar, 2px) solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
+.vh-isaret.secili { z-index: 2; width: 44px; height: 44px; }
+.vh-isaret.secili::before { width: 26px; height: 26px; border-width: 3px; }
 .vh-isaret:focus-visible { outline: 3px solid var(--kiremit); outline-offset: -6px; border-radius: 50%; }
 .vh-isaret[hidden] { display: none; }
-.vh-ad { display: none; position: absolute; left: 34px; top: 50%; transform: translateY(-50%); white-space: nowrap; pointer-events: none;
+.vh-ad { display: none; position: absolute; left: calc(50% + var(--boy, 18px) / 2 + 4px); top: 50%; transform: translateY(-50%); white-space: nowrap; pointer-events: none;
   font: 700 13px/1 var(--sans); color: #2B2B2B; text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff; }
 .vh-isaret.adli .vh-ad, .vh-isaret.secili .vh-ad { display: block; }
-.vh-isaret.secili .vh-ad { font-size: 14px; left: 36px; }
+.vh-isaret.secili .vh-ad { font-size: 14px; left: 37px; }
 .vh-konum { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; }
 .vh-konum[hidden] { display: none; }
 .vh-halka { position: absolute; border-radius: 50%; background: rgba(26,115,232,.15); border: 1px solid rgba(26,115,232,.4); transform: translate(-50%, -50%); }

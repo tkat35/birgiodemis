@@ -128,19 +128,27 @@
     ty = Math.min(0, Math.max(kutu.clientHeight - H * s, ty));
     ic.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + s + ")";
     kutu.style.setProperty("--ters", String(1 / s));
+    // İşaret boyu: 1 m = 1,3 px'te tam boy (18 px); uzaklaştıkça küçülür (en az 7 px), dokunma alanı en az 24 px
+    boy = isaretBoyu();
+    kutu.style.setProperty("--boy", boy + "px");
+    kutu.style.setProperty("--alan", Math.max(24, Math.min(44, boy + 20)) + "px");
+    kutu.style.setProperty("--kenar", (boy < 11 ? 1.5 : 2) + "px");
     adlar();
   }
+  var boy = 18;
+  function isaretBoyu() { return Math.round(Math.min(18, Math.max(7, 18 * s * M / 1.3)) * 10) / 10; }
 
   // Yakınlaşınca adlar görünür; çakışan adlar gizlenir (seçili önce)
   function adlar() {
     var goster = s * M > 1;
     var sira = isaretler.filter(function (el) { return !el.hidden; });
     // adlar işaret noktalarının da üstüne binmesin
-    var kutular = sira.map(function (el) { var x = el._x * s, y = el._y * s; return { l: x - 10, t: y - 10, r: x + 10, b: y + 10 }; });
+    var yari = boy / 2 + 1;
+    var kutular = sira.map(function (el) { var x = el._x * s, y = el._y * s; return { l: x - yari, t: y - yari, r: x + yari, b: y + yari }; });
     sira.sort(function (a, b) { return (b === secili ? 1 : 0) - (a === secili ? 1 : 0); });
     sira.forEach(function (el) {
       var x = el._x * s, y = el._y * s;
-      var k = { l: x + 10, t: y - 9, r: x + 14 + el._ad.length * 7.4, b: y + 9 };
+      var k = { l: x + yari, t: y - 9, r: x + yari + 4 + el._ad.length * 7.4, b: y + 9 };
       var cakisma = kutular.some(function (o) { return k.l < o.r && k.r > o.l && k.t < o.b && k.b > o.t; });
       var adli = goster && (el.classList.contains("secili") || !cakisma);
       el.classList.toggle("adli", adli);
