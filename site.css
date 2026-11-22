@@ -44,6 +44,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .ust { z-index: 3; }
 .ust-sag { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .menu-ana { position: relative; }
+/* Dil değişimi (TR ↔ EN): menü düğmesinin solunda, aynı yükseklikte */
+.dil { display: inline-grid; place-items: center; min-width: 46px; height: 46px; padding: 0 10px; border: 1px solid rgba(255,255,255,.45);
+  border-radius: 12px; color: #fff; font-weight: 600; font-size: .9375rem; letter-spacing: .04em; text-decoration: none; }
+.dil:hover { background: rgba(255,255,255,.15); }
+.ust .dil { background: rgba(28,22,16,.35); backdrop-filter: blur(6px); border-color: rgba(255,255,255,.55); }
+.ust-cubuk .ust-sag { flex-shrink: 1; min-width: 0; }
+@media (min-width: 980px) { .ust-cubuk .ust-sag { flex-direction: row-reverse; gap: 18px; } }
 .menu-ana summary { background: rgba(28,22,16,.35); backdrop-filter: blur(6px); border-color: rgba(255,255,255,.55); }
 /* Kapak taşmayı kestiği için liste ekrana sabitlenir (sağ üst, düğmenin hemen altı) */
 .ust .menu-ana[open] ul { position: fixed; left: auto; right: 16px; top: 74px; width: min(280px, calc(100vw - 32px)); max-height: calc(100svh - 90px); overflow-y: auto; border-radius: 14px; padding: 8px 18px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); z-index: 20; }

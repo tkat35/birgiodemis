@@ -1,4 +1,8 @@
 // Birgi web sitesi — hava durumu (Open-Meteo, anahtarsız) ve büyük görsel penceresi
+// Dil: sayfanın lang özniteliğinden (site/en/ sayfaları "en"); birgiT(tr, en) ekrandaki metni seçer.
+var BIRGI_EN = document.documentElement.lang === "en";
+function birgiT(tr, en) { return BIRGI_EN ? en : tr; }
+
 (function () {
   "use strict";
 
@@ -12,18 +16,19 @@
       .then(function (veri) {
         var c = veri.current;
         var kod = c.weather_code;
-        var simge = "☀", ad = "açık";
+        var simge = "☀", ad = birgiT("açık", "clear");
         if (kod === 0 && !c.is_day) { simge = "☾"; }
-        else if (kod >= 1 && kod <= 3) { simge = "⛅"; ad = "parçalı bulutlu"; }
-        else if (kod === 45 || kod === 48) { simge = "🌫"; ad = "sisli"; }
-        else if (kod >= 51 && kod <= 67) { simge = "🌧"; ad = "yağmurlu"; }
-        else if (kod >= 71 && kod <= 77) { simge = "❄"; ad = "karlı"; }
-        else if (kod >= 80 && kod <= 82) { simge = "🌦"; ad = "sağanak yağışlı"; }
-        else if (kod >= 85 && kod <= 86) { simge = "❄"; ad = "kar sağanaklı"; }
-        else if (kod >= 95) { simge = "⛈"; ad = "fırtınalı"; }
+        else if (kod >= 1 && kod <= 3) { simge = "⛅"; ad = birgiT("parçalı bulutlu", "partly cloudy"); }
+        else if (kod === 45 || kod === 48) { simge = "🌫"; ad = birgiT("sisli", "foggy"); }
+        else if (kod >= 51 && kod <= 67) { simge = "🌧"; ad = birgiT("yağmurlu", "rainy"); }
+        else if (kod >= 71 && kod <= 77) { simge = "❄"; ad = birgiT("karlı", "snowy"); }
+        else if (kod >= 80 && kod <= 82) { simge = "🌦"; ad = birgiT("sağanak yağışlı", "showers"); }
+        else if (kod >= 85 && kod <= 86) { simge = "❄"; ad = birgiT("kar sağanaklı", "snow showers"); }
+        else if (kod >= 95) { simge = "⛈"; ad = birgiT("fırtınalı", "stormy"); }
         var derece = Math.round(c.temperature_2m);
         hava.textContent = simge + " " + derece + " °C";
-        hava.setAttribute("aria-label", "Birgi'de hava şu an " + derece + " derece, " + ad);
+        hava.setAttribute("aria-label", birgiT("Birgi'de hava şu an " + derece + " derece, " + ad,
+          "Weather in Birgi now: " + derece + " degrees, " + ad));
         hava.hidden = false;
       })
       .catch(function () { /* hava bilgisi alınamazsa gösterilmez */ });
@@ -65,7 +70,7 @@
     if (document.fullscreenElement && document.exitFullscreen) { document.exitFullscreen().catch(function () {}); }
     if (video) { video.pause(); video.remove(); }
     video = null;
-    etiket.textContent = "Yeniden izle";
+    etiket.textContent = birgiT("Yeniden izle", "Watch again");
     kapak.hidden = false;
     kapak.focus();
   }
@@ -78,13 +83,13 @@
     video.controls = true;
     video.playsInline = true;
     video.preload = "auto";
-    video.setAttribute("aria-label", "Birgi tanıtım videosu (MEDYAPOZ)");
+    video.setAttribute("aria-label", birgiT("Birgi tanıtım videosu (MEDYAPOZ)", "Birgi promotional video (MEDYAPOZ)"));
     video.addEventListener("ended", bitir);
     video.addEventListener("error", function () {
       if (video) { video.remove(); }
       video = null;
       kapak.hidden = false;
-      etiket.textContent = "Video yüklenemedi — tekrar dene";
+      etiket.textContent = birgiT("Video yüklenemedi — tekrar dene", "Video could not be loaded — try again");
     });
     kutu.appendChild(video);
     kapak.hidden = true;
@@ -200,7 +205,7 @@
     img.hidden = !g;
     if (g) { img.src = g; }
     kart.querySelector(".vh-kart-tur").textContent = el.getAttribute("data-tur-ad") +
-      (el.getAttribute("data-yaklasik") === "1" ? " · yaklaşık konum" : "");
+      (el.getAttribute("data-yaklasik") === "1" ? birgiT(" · yaklaşık konum", " · approximate location") : "");
     kart.querySelector(".vh-kart-ad").textContent = el._ad;
     kart.querySelector(".vh-bilgi").href = el.getAttribute("data-sayfa");
     kart.querySelector(".vh-tarif").href = "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" +
@@ -317,7 +322,9 @@
     var n = konumXY(konum);
     if (n.x < 0 || n.y < 0 || n.x > W || n.y > H) {
       var km = Math.hypot(n.x - W / 2, n.y - H / 2) / M / 1000;
-      mesajGoster("Şu an Birgi haritasının dışındasınız (Birgi’ye yaklaşık " + (km < 10 ? km.toFixed(1) : Math.round(km)) + " km).");
+      var mesafe = km < 10 ? km.toFixed(1) : Math.round(km);
+      mesajGoster(birgiT("Şu an Birgi haritasının dışındasınız (Birgi’ye yaklaşık " + mesafe + " km).",
+        "You are outside the map of Birgi right now (about " + mesafe + " km from Birgi)."));
       return;
     }
     odakla(n.x, n.y, Math.max(s, enAz() * 4), 0.4);
@@ -336,21 +343,27 @@
   }
   konumDugmesi.addEventListener("click", function () {
     if (konum && izleme !== null) { konumaGit(); return; }
-    if (!("geolocation" in navigator)) { mesajGoster("Bu tarayıcı konum göstermeyi desteklemiyor."); return; }
+    if (!("geolocation" in navigator)) {
+      mesajGoster(birgiT("Bu tarayıcı konum göstermeyi desteklemiyor.", "This browser cannot show your location."));
+      return;
+    }
     if (izleme !== null) { return; }
     konumDugmesi.classList.add("bekliyor");
     izleme = navigator.geolocation.watchPosition(function (p) {
       konum = p.coords;
       konumDugmesi.classList.remove("bekliyor");
       konumDugmesi.classList.add("acik");
-      konumDugmesi.setAttribute("aria-label", "Haritayı konumuma getir");
+      konumDugmesi.setAttribute("aria-label", birgiT("Haritayı konumuma getir", "Move the map to my location"));
       konumCiz();
       if (ilkKonum) { ilkKonum = false; konumaGit(); }
     }, function (h) {
       navigator.geolocation.clearWatch(izleme);
       izleme = null;
       konumDugmesi.classList.remove("bekliyor", "acik");
-      mesajGoster(h.code === 1 ? "Konum izni verilmedi. Tarayıcı ayarlarından izin verebilirsiniz." : "Konum alınamadı.");
+      mesajGoster(h.code === 1
+        ? birgiT("Konum izni verilmedi. Tarayıcı ayarlarından izin verebilirsiniz.",
+          "Location permission was not granted. You can allow it in your browser settings.")
+        : birgiT("Konum alınamadı.", "Could not get your location."));
     }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
   });
 
@@ -366,6 +379,9 @@
   var anaEkran = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
     window.navigator.standalone === true;
   if (anaEkran && "serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").catch(function () { /* önbellek olmadan da çalışır */ });
+    // sw.js site kökündedir; /en/ sayfalarından da kökteki dosya kaydedilir (kapsam bütün site)
+    var betik = document.querySelector('script[src$="site.js"]');
+    navigator.serviceWorker.register(new URL("sw.js", betik.src).href)
+      .catch(function () { /* önbellek olmadan da çalışır */ });
   }
 })();
