@@ -356,16 +356,102 @@ function birgiT(tr, en) { return BIRGI_EN ? en : tr; }
       konumDugmesi.setAttribute("aria-label", birgiT("Haritayı konumuma getir", "Move the map to my location"));
       konumCiz();
       if (ilkKonum) { ilkKonum = false; konumaGit(); }
+      if (yakinAcik) { yakinListele(); }
     }, function (h) {
       navigator.geolocation.clearWatch(izleme);
       izleme = null;
       konumDugmesi.classList.remove("bekliyor", "acik");
+      if (yakinAcik) {
+        yakinNot.hidden = false;
+        yakinNot.textContent = h.code === 1
+          ? birgiT("Konum izni verilmedi. Yakınınızdaki yapıları sıralamak için konumunuz gerekir.",
+            "Location permission was not granted. Your location is needed to sort the sites near you.")
+          : birgiT("Konum alınamadı.", "Could not get your location.");
+      }
       mesajGoster(h.code === 1
         ? birgiT("Konum izni verilmedi. Tarayıcı ayarlarından izin verebilirsiniz.",
           "Location permission was not granted. You can allow it in your browser settings.")
         : birgiT("Konum alınamadı.", "Could not get your location."));
     }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
   });
+
+  // Yakınımdakiler: yapılar konuma kuş uçuşu uzaklığa göre (çok noktalı yapılarda en yakın nokta), haritadaki tür
+  // süzgecine uyar; konum "Konumum" ile aynı izlemeden gelir ve yürüdükçe liste yenilenir.
+  var yakinDugme = document.querySelector(".vh-yakin-dugme");
+  var yakinNot = document.querySelector(".vh-yakin-not");
+  var yakinListe = document.querySelector(".vh-yakin-liste");
+  var yakinAcik = false;
+  function kusUcusu(e1, b1, e2, b2) {
+    var r = Math.PI / 180, de = (e2 - e1) * r, db = (b2 - b1) * r;
+    var a = Math.pow(Math.sin(de / 2), 2) + Math.cos(e1 * r) * Math.cos(e2 * r) * Math.pow(Math.sin(db / 2), 2);
+    return 2 * 6371000 * Math.asin(Math.sqrt(a));
+  }
+  function uzaklik(m) {
+    // bölünmez boşluk: "30 m" satır sonunda ikiye ayrılmaz
+    if (m < 1000) { return Math.max(10, Math.round(m / 10) * 10) + " m"; }
+    var km = (m / 1000).toFixed(m < 10000 ? 1 : 0);
+    return (BIRGI_EN ? km : km.replace(".", ",")) + " km";
+  }
+  function yakinListele() {
+    var enYakin = {};
+    isaretler.forEach(function (el) {
+      if (tur !== "" && el.getAttribute("data-tur") !== tur) { return; }
+      // işaretin harita konumundan coğrafi konumu (çok noktalı yapılarda her nokta ayrı)
+      var m = kusUcusu(konum.latitude, konum.longitude, KUZEY - el._y / KY, BATI + el._x / KX);
+      var id = el.getAttribute("data-id");
+      if (!enYakin[id] || m < enYakin[id].m) { enYakin[id] = { el: el, m: m }; }
+    });
+    var sirali = Object.keys(enYakin).map(function (k) { return enYakin[k]; }).sort(function (a, b) { return a.m - b.m; });
+    var birgiye = kusUcusu(konum.latitude, konum.longitude, +yakinDugme.getAttribute("data-enlem"), +yakinDugme.getAttribute("data-boylam"));
+    yakinNot.hidden = false;
+    yakinNot.textContent = (birgiye > 3000
+      ? birgiT("Birgi’ye yaklaşık " + uzaklik(birgiye) + " uzaktasınız; liste bulunduğunuz yere göre sıralandı. ",
+        "You are about " + uzaklik(birgiye) + " from Birgi; the list is sorted from where you are. ")
+      : "") + birgiT("Uzaklıklar kuş uçuşudur; işaretlerin çoğu yaklaşık konumdur.",
+      "Distances are straight-line; most markers show approximate locations.");
+    yakinListe.innerHTML = "";
+    sirali.forEach(function (s) {
+      var el = s.el, li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = el.getAttribute("data-sayfa");
+      var g = el.getAttribute("data-gorsel");
+      if (g) { var img = document.createElement("img"); img.src = g; img.alt = ""; img.width = 52; img.height = 52; img.loading = "lazy"; a.appendChild(img); }
+      var metin = document.createElement("span");
+      var ad = document.createElement("strong");
+      ad.textContent = el._ad;
+      var alt = document.createElement("span");
+      alt.className = "vh-yakin-alt";
+      alt.innerHTML = '<span class="vh-nokta" style="--r:' + el.style.getPropertyValue("--r") + '"></span>';
+      alt.appendChild(document.createTextNode(el.getAttribute("data-tur-ad") + " · ≈ " + uzaklik(s.m)));
+      metin.appendChild(ad);
+      metin.appendChild(alt);
+      a.appendChild(metin);
+      var goster = document.createElement("a");
+      goster.className = "vh-goster";
+      goster.href = "#harita=" + el.getAttribute("data-id");
+      goster.setAttribute("data-goster", el.getAttribute("data-id"));
+      goster.textContent = birgiT("haritada göster", "show on map");
+      li.appendChild(a);
+      li.appendChild(goster);
+      yakinListe.appendChild(li);
+    });
+    yakinListe.hidden = false;
+  }
+  if (yakinDugme) {
+    yakinDugme.addEventListener("click", function () {
+      yakinAcik = true;
+      if (konum && izleme !== null) { yakinListele(); return; }
+      yakinNot.hidden = false;
+      yakinNot.textContent = birgiT("Konumunuz alınıyor…", "Getting your location…");
+      konumDugmesi.click(); // izin ve izleme "Konumum" ile ortak
+    });
+    yakinListe.addEventListener("click", function (e) {
+      var a = e.target.closest("[data-goster]");
+      if (a) { e.preventDefault(); idIleSec(a.getAttribute("data-goster")); }
+    });
+    // haritadaki tür süzgeci değişince liste de süzülür
+    suzgecler.forEach(function (b) { b.addEventListener("click", function () { if (yakinAcik && konum) { yakinListele(); } }); });
+  }
 
   window.addEventListener("resize", ciz);
   ilkGorunum();
